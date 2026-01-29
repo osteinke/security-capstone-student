@@ -50,24 +50,21 @@ function Install-Winget {
     $vcLibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
     $uiXamlUrl = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx"
     $wingetUrl = "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-    $licenseUrl = "https://github.com/microsoft/winget-cli/releases/latest/download/License1.xml"
     
     $vcLibsPath = Join-Path $tempDir "Microsoft.VCLibs.x64.14.00.Desktop.appx"
     $uiXamlPath = Join-Path $tempDir "Microsoft.UI.Xaml.2.8.x64.appx"
     $wingetPath = Join-Path $tempDir "Microsoft.DesktopAppInstaller.msixbundle"
-    $licensePath = Join-Path $tempDir "License1.xml"
     
     Download-File $vcLibsUrl $vcLibsPath "VCLibs dependency"
     Download-File $uiXamlUrl $uiXamlPath "UI.Xaml dependency"
     Download-File $wingetUrl $wingetPath "winget"
-    Download-File $licenseUrl $licensePath "license"
     
     Write-Host "Installing dependencies..."
     Add-AppxPackage -Path $vcLibsPath
     Add-AppxPackage -Path $uiXamlPath
     
     Write-Host "Installing winget..."
-    Add-AppxProvisionedPackage -Online -PackagePath $wingetPath -LicensePath $licensePath | Out-Null
+    Add-AppxPackage -Path $wingetPath
     
     # Refresh PATH so winget is available
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
