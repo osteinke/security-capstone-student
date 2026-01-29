@@ -1,26 +1,36 @@
 ---
 title: Data Flow Diagram - KeyKeeper (Mermaid)
 ---
+
 flowchart LR
-    U[User]
-    FE[Frontend]
-    API[API_Server]
-    AUTH[Auth_Middleware]
+
+subgraph External["External Entity"]
+    User[User]
+end
+
+subgraph ClientTrust["Trust Boundary: Client"]
+    FE[Browser UI]
+end
+
+subgraph ServerTrust["Trust Boundary: Server"]
+    API[API Service]
     DB[(Database)]
-    LOG[Audit_Log]
+end
 
-    U --> Login --> FE
-    FE --> PostLogin --> API
-    API --> IssueJWT --> FE
+User -->|"HTTP(S)"| FE
+FE -->|"REST/JSON + JWT"| API
+API -->|"queries"| DB
+DB -->|"results"| API
+API -->|"responses"| FE
+FE -->|"rendered UI"| User
 
-    FE --> GetItems --> API
-    API --> AUTH --> IssueJWT
-    AUTH --> API
-    API --> FE
+%% Styling
+classDef external fill:#f9f,stroke:#333,stroke-width:2px
+classDef client fill:#bbf,stroke:#333,stroke-width:2px
+classDef server fill:#bfb,stroke:#333,stroke-width:2px
+classDef database fill:#fbf,stroke:#333,stroke-width:2px
 
-    FE --> RevealSecret --> API
-   
-    API --> DB
-    API --> LOG
-    
-
+class User external
+class FE client
+class API server
+class DB database
