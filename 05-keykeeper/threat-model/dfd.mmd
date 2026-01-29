@@ -2,33 +2,33 @@
 title: Data Flow Diagram - KeyKeeper (Mermaid)
 ---
 flowchart LR
-    subgraph External["External Entity"]
-        User((User))
-    end
+    U[User Browser<br/>(Client)]
+    FE[Frontend UI<br/>(React)]
+    API[API Server<br/>(Express)]
+    AUTH[Auth Middleware<br/>(JWT)]
+    DB[(Database)]
+    LOG[Audit Log]
 
-    subgraph ClientTrust["Trust Boundary: Client"]
-        FE[Browser\nVite/React]
-    end
+    %% Authentication
+    U -->|Login Credentials| FE
+    FE -->|POST /login| API
+    API -->|JWT Issued| FE
 
-    subgraph ServerTrust["Trust Boundary: Server"]
-        API[API\nExpress]
-        DB[(MongoDB)]
-    end
+    %% Page Load (Metadata Only)
+    FE -->|GET /items<br/>(No secretValue)| API
+    API --> AUTH
+    AUTH --> API
+    API -->|Secret Metadata| FE
 
-    User -->|"HTTP(S) (dev)"| FE
-    FE -->|"REST/JSON + JWT"| API
-    API -->|"queries"| DB
-    DB -->|"results"| API
-    API -->|"responses"| FE
-    FE -->|"rendered UI"| User
+    %% Explicit Reveal Flow
+    FE -->|POST /items/:id/reveal| API
+    API --> AUTH
+    AUTH --> API
+    API -->|Authorized?| API
+    API -->|Fetch Secret| DB
+    API -->|Log Access| LOG
+    API -->|Return secretValue| FE
 
-    %% Styling
-    classDef external fill:#f9f,stroke:#333,stroke-width:2px
-    classDef client fill:#bbf,stroke:#333,stroke-width:2px
-    classDef server fill:#bfb,stroke:#333,stroke-width:2px
-    classDef database fill:#fbb,stroke:#333,stroke-width:2px
+    %% Database Storage
+    DB -->|Encrypted Secrets| DB
 
-    class User external
-    class FE client
-    class API server
-    class DB database
