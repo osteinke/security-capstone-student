@@ -14,14 +14,13 @@ flowchart LR
     API --> IssueJWT --> FE
 
     FE --> GetItems --> API
-    API --> AUTH
+    API --> AUTH --> IssueJWT
     AUTH --> API
     API --> FE
 
     FE --> RevealSecret --> API
     API --> AUTH
-    AUTH --> API
     API --> DB
     API --> LOG
-    API --> FE
+    
 
