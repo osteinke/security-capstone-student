@@ -2,29 +2,25 @@
 title: Data Flow Diagram - KeyKeeper (Mermaid)
 ---
 flowchart LR
-    U[User Browser\n(Client)]
-    FE[Frontend UI\n(React)]
-    API[API Server\n(Express)]
-    AUTH[Auth Middleware\n(JWT)]
+    U[User Browser]
+    FE[Frontend UI]
+    API[API Server]
+    AUTH[Auth Middleware]
     DB[(Database)]
     LOG[Audit Log]
 
-    %% Authentication
     U -->|Login Credentials| FE
     FE -->|POST /login| API
     API -->|JWT Issued| FE
 
-    %% Page Load (Metadata Only)
-    FE -->|GET /items\n(no secretValue)| API
+    FE -->|GET /items (metadata only)| API
     API --> AUTH
     AUTH --> API
-    API -->|Secret Metadata| FE
+    API --> FE
 
-    %% Explicit Reveal Flow
     FE -->|POST /items/:id/reveal| API
     API --> AUTH
     AUTH --> API
-    API -->|Authorization Check| API
-    API -->|Fetch Secret| DB
-    API -->|Log Access| LOG
-    API -->|Return secretValue| FE
+    API --> DB
+    API --> LOG
+    API --> FE
