@@ -7,7 +7,7 @@ export async function requireAuth(req, res, next) {
   if (!token) return res.status(401).json({ error: 'Missing token' })
 
   try {
-    const decoded = verifyToken(token)
+    const decoded = verifyToken(token)  // this line assumes the token is valid forever
     const user = await User.findById(decoded.sub).lean()
     if (!user) return res.status(401).json({ error: 'Invalid token' })
     req.user = { id: String(user._id), email: user.email, role: user.role }
