@@ -1,28 +1,29 @@
 ---
-title: Data Flow Diagram - KeyKeeper (Mermaid)
+title: Data Flow Diagram - KeyKeeper Secrets Vault
 ---
 
 flowchart LR
 
 subgraph External["External Entity"]
-    User[User]
+    User[Employee / DevOps / Admin]
 end
 
 subgraph ClientTrust["Trust Boundary: Client"]
-    FE[Browser UI]
+    FE[KeyKeeper Web UI]
 end
 
 subgraph ServerTrust["Trust Boundary: Server"]
-    API[API Service]
-    DB[(Database)]
+    API[KeyKeeper API]
+    DB[(Secrets Store)]
 end
 
-User -->|"HTTP(S)"| FE
-FE -->|"REST/JSON + JWT"| API
-API -->|"queries"| DB
-DB -->|"results"| API
-API -->|"responses"| FE
-FE -->|"rendered UI"| User
+User -->|"HTTPS"| FE
+FE -->|"REST JSON + JWT Access Token"| API
+API -->|"Validate JWT + Role"| API
+API -->|"Read / Write Secret Metadata"| DB
+DB -->|"Metadata + Encrypted Values"| API
+API -->|"Responses (No Secret Values)"| FE
+FE -->|"Rendered UI"| User
 
 %% Styling
 classDef external fill:#f9f,stroke:#333,stroke-width:2px
